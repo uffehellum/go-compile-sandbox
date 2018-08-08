@@ -15,8 +15,8 @@ type Event struct {
 
 // Properties is in a plugin
 type Properties struct {
-	script string,
-	scriptProperties map[string]interface{},
+	script           string
+	scriptProperties map[string]interface{}
 }
 
 func main() {
@@ -26,9 +26,9 @@ func main() {
 		"k": 42,
 	}
 	event := Event{Data: data, Message: "message string"}
-	properties := Properties {
+	properties := Properties{
 		script: `
-			console.log('hej otto - ' + event.Data.a)
+			// console.log('hej otto - ' + event.Data.a)
 			event.Data.k *= properties.factor
 			data = event.Data
 			data.name = 'bob'
@@ -40,7 +40,10 @@ func main() {
 	vm := otto.New()
 	vm.Set("event", event)
 	vm.Set("properties", properties.scriptProperties)
-	vm.Run(properties.script)
+	for i := 1; i <= 1000; i++ {
+		properties.scriptProperties["factor"] = i
+		vm.Run(properties.script)
+	}
 	fmt.Println("Hej " + data["name"].(string))
-	fmt.Printf("Answer = %d\n", int(data["k"].(float64)))
+	fmt.Printf("Answer = %f\n", data["k"])
 }
