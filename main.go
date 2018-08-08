@@ -21,11 +21,45 @@ const pipelinesource = `{
 			"properties": {
 				"addend": 11
 			}
+		},
+		{
+			"script": "data = event.Data; data.k += properties.addend",
+			"properties": {
+				"addend": -11
+			}
+		},
+		{
+			"script": "data = event.Data; data.k /= properties.factor",
+			"properties": {
+				"factor": 7
+			}
+		},
+		{
+			"script": "data = event.Data; data.k += properties.addend",
+			"properties": {
+				"addend": 0.0001
+			}
 		}
 	]
 }`
 
 const eventsource = `[
+	{
+		"data": {
+			"a": "value a",
+			"b": "value b",
+			"k": 1
+		},
+		"message":""
+	},	
+	{
+		"data": {
+			"a": "value a",
+			"b": "value b",
+			"k": 2
+		},
+		"message":""
+	},	
 	{
 		"data": {
 			"a": "value a",
@@ -57,30 +91,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	sandbox.ExecuteBatch(events, pipeline)
+	for i := 0; i < 10000; i++ {
+		sandbox.ExecuteBatch(events, pipeline)
+	}
 	for _, e := range events {
 		fmt.Println(e.Data["k"])
 	}
-	// data := map[string]interface{}{}
-	// event := Event{Data: data, Message: "message string"}
-	// properties := Properties{
-	// 	script: `
-	// 		// console.log('hej otto - ' + event.Data.a)
-	// 		event.Data.k *= properties.factor
-	// 		data = event.Data
-	// 		data.name = 'bob'
-	// 	`,
-	// 	scriptProperties: map[string]interface{}{
-	// 		"factor": 3,
-	// 	},
-	// }
-	// vm := otto.New()
-	// vm.Set("event", event)
-	// vm.Set("properties", properties.scriptProperties)
-	// for i := 1; i <= 1000; i++ {
-	// 	properties.scriptProperties["factor"] = i
-	// 	vm.Run(properties.script)
-	// }
-	// fmt.Println("Hej " + data["name"].(string))
-	// fmt.Printf("Answer = %f\n", data["k"])
 }
